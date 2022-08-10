@@ -1,0 +1,17 @@
+/*
+    PUCPR - Tecnologia em Big Data e Inteligência Analítica - Inverno 2022
+
+    Descrição   : Pseudocódigo para jogo ZombieDice, projeto de Raciocíno Computacional.
+    Tutor       : Professor Galbas
+    Aluno       : Giovani Drosda Lima | gdrosdalima@gmail.com
+    ----------------------------------------------------------------------------------------------------
+        Convenções adotadas neste pseudocódigo:
+        
+        Comentários de uma linha serão representados com barras duplas antecedendo o texto // como aqui.
+        Multi-linhas serão representados entre barras e asteriscos /* como aqui */.
+
+        Variáveis serão bem descritas em camelCase precedidas de $ e sucedidas de _tipo. Exemplo:
+        $quantidadeDeJogadores_int
+
+*/
+
