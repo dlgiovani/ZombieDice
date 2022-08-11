@@ -9,29 +9,29 @@
 
 # Bibliotecas
 
-import time, random
+import time, random, copy
 
 #--
 
 # definição de classes, dicionários e afins [INÍCIO]
 
 class Player:
-    def __init__(info, name, description, klass, isBot, hp, brains, itemQty):
+    def __init__(info, name, description, klass, isBot, hp, brains):
         info.name           = name
         info.description    = description
-        info.klass          = Klass(klass)
+        info.klass          = Klass[klass][0]
         info.isBot          = isBot
         info.hp             = hp
         info.brains         = 0
-        info.itemQty        = itemQty
+        info.itemQty        = Klass[klass][1]
     #enddef
 #endclass
 
 Klass = {
-    "1": ["Parrudo", 1],
-    "2": ["Veloz", 0],
-    "3": ["Ciclista", 1],
-    "4": ["Cowboy", 2]
+    0: ["Parrudo", 1],
+    1: ["Veloz", 0],
+    2: ["Ciclista", 1],
+    3: ["Cowboy", 2]
 }
 
 BotNameSyllables = {"kan", "len", "ghi", "flok", "trom", "fle", "dros", "da", "li", "ma"}
@@ -96,16 +96,23 @@ def StartMenu():
 #enddef
 
 def SetCharacters(quantityOfPlayers, quantityOfBots, quantityOfPlayersAndBots):
+    PlayersInGame = []
     for i in range(quantityOfBots):
+
         quantityOfSyllables = random.choice([2,3])
         name = ''
         
         for o in range(quantityOfSyllables):
             name += random.choice(tuple(BotNameSyllables))
+            
         description = 'bipbop' #TODO add cool descriptions
-        klass = random.choice(["1", "2", "3", "4"])
+        klass = random.choice(list(Klass))
         isBot = True
-        print("Nasce o grande {}, o zumbi {}".format(name, description))
-
+        PlayersInGame.append(str(Player(name, description, klass, isBot, 3, 0).__dict__))
+        print("Nasce {}, o zumbi {}".format(name, klass))
+        
+    print(PlayersInGame) #debugging
+    for z in PlayersInGame:
+        print(z)
 
 StartMenu() #debbuging
