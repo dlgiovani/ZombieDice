@@ -27,16 +27,42 @@ class Player:
     #enddef
 #endclass
 
+class TotalInGame:
+    def __init__(qtd, qtdplayers, qtdbots):
+        qtd.players = qtdplayers
+        qtd.bots    = qtdbots
+        qtd.total   = qtdplayers + qtdbots
+    #enddef
+#endclass
+
 Klass = {
-    0: ["Parrudo", 1],
-    1: ["Veloz", 0],
-    2: ["Ciclista", 1],
-    3: ["Cowboy", 2]
+    1: ["Parrudo", 0, "Enquanto as outras classes possuem 3 de vida, esta tem 4. Porém, devido ao seu acelerado metabolismo, precisa consumir 15 cérebros para a vitória ao invés de 13."],
+    2: ["Incansável", 0, "Caso os 3 dados na rodada deste zumbi resultem em passos, este pode optar por correr mais um pouco e jogar mais um dado para tentar alcançar sua vítima."],
+    3: ["Ciclista", 4, "Este zumbi já não anda mais de bicicleta, mas ainda tem um capacete que oferece 50% de chances de protegê-lo do tiro. Durabilidade de 4 tiros."],
+    4: ["Cowboy", 0, "Se o cowboy conseguir cérebros na rodada, ele pode optar por trocá-los por laços. Ao jogar um laço, existe 30% de chances de pegar 1 vítima, 15% de pegar 2 e 3% de pegar 3."]
 }
 
-BotNameSyllables = {"kan", "len", "ghi", "flok", "trom", "fle", "dros", "da", "li", "ma"}
+BotNameSyllables    = {"kan", "len", "ghi", "flok", "trom", "fle", "dros", "da", "li", "ma"}
+BotGenerationMessages      = {
+    "Mordendo uns transeuntes...",
+    "Selecionando os melhores cérebros...",
+    "Fazendo uma pausa pro lanche...",
+    "Costurando mandíbulas tortas...",
+    "Enchendo linguiça...",
+    "Treinando o zumbi...",
+    "Enchendo a caneca de café..."
+}
+
+PlayersInGame = []
 
 # definição de classes, dicionários e afins [FIM]
+
+def newSection():
+    print("\n\n")
+    print("===========================================")
+    print("###########################################")
+    print("===========================================")
+    print("\n\n")
 
 def Welcome():
     print("Olá! Bem vindos ao ZombieDice.")
@@ -80,23 +106,38 @@ def StartMenu():
       
     print("Bip bop, {} bots vão jogar.".format(quantityOfBots))
 
-    quantityOfPlayersAndBots = quantityOfPlayers + quantityOfBots
+    TotalInGame(quantityOfPlayers, quantityOfBots)
 
-    if quantityOfPlayersAndBots <= 1:
+    if TotalInGame.total <= 1:
         print("Quer todos os cérebros pra você? ~.o")
         print("Adicione pelo menos 2 jogadores ou bots para iniciar.")
         StartMenu()
 
-    if quantityOfPlayers == 0:
+    if TotalInGame.qtdplayers == 0:
         print("Robô também sofre, abaixem o preço do i9!")
 
     
-    SetCharacters(quantityOfPlayers, quantityOfBots, quantityOfPlayersAndBots)
+    SetCharacters()
 
 #enddef
 
-def SetCharacters(quantityOfPlayers, quantityOfBots, quantityOfPlayersAndBots):
-    PlayersInGame = []
+def SetCharacters():
+    newSection()
+    GenerateBots()
+
+    newSection()
+    SetPlayers()
+
+#enddef
+
+def GenerateBots(quantityOfBots):
+    print("Ok! vou gerar os bots...\n")
+
+    for x in range(random.randint(3, 6)):
+        print(random.choice(list(BotGenerationMessages))) #imersão
+        time.sleep(2)
+
+    print("") #linebreak
     for i in range(quantityOfBots):
 
         quantityOfSyllables = random.choice([2,3])
@@ -108,11 +149,22 @@ def SetCharacters(quantityOfPlayers, quantityOfBots, quantityOfPlayersAndBots):
         description = 'bipbop' #TODO add cool descriptions
         klass = random.choice(list(Klass))
         isBot = True
-        PlayersInGame.append(str(Player(name, description, klass, isBot, 3, 0).__dict__))
-        print("Nasce {}, o zumbi {}".format(name, klass))
-        
-    print(PlayersInGame) #debugging
-    for z in PlayersInGame:
-        print(z)
 
-StartMenu() #debbuging
+        PlayersInGame.append(str(Player(name, description, klass, isBot, 3, 0).__dict__))
+
+        print("Nasce {}, um zumbi {}!".format(name, Klass[klass][0]))
+
+#enddef
+
+
+def SetPlayers():
+    print("Joia. Agora, vamos criar os personagens dos jogadores ^ü^ eba!")
+
+    name = input("Escolha um nome que faça jus à grandeza de seu personagem:")
+    print("{}! Que nome digno!".format(name))
+
+    print("Vamos escolher a classe do seu personagem.")
+    for x in Klass:
+        print("{}. {} - {}".format(x,Klass[x][0],Klass[x][2]))
+
+SetPlayers()
