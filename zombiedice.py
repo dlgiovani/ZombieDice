@@ -107,7 +107,8 @@ def speech(text, speed):
 def Welcome():
     speech('ATENÇÃO: este programa usa alguns caracteres UTF-8. Caso seu console não esteja configurado com suporte UTF-8,', .01)
     speech('\n vão aparecer uns bagulhos sinistros na tela.', .01)
-    speech('\n Aqui uma demonstração desses caracteres: ⣿⣿⣿', .01)
+    speech('\nAqui uma demonstração desses caracteres: ⣿⣿⣿', .01)
+    speech('\nPS: o console do VScode decodifica estes caracteres ^^, o CMD do Windows normalmente não.', .01)
     newSection()
     newSection()
     speech("Olá! Bem vindos ao ZombieDice.\n", .04)
