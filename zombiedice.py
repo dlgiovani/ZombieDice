@@ -16,33 +16,60 @@ import time, random, copy
 # definição de classes, dicionários e afins [INÍCIO]
 
 class Player:
-    def __init__(info, name, description, klass, isBot, hp, brains):
-        info.name           = name
-        info.description    = description
-        info.klass          = Klass[klass][0]
-        info.isBot          = isBot
-        info.hp             = hp
-        info.brains         = 0
-        info.itemQty        = Klass[klass][1]
+    def __init__(self, name, description, klass, isBot, hp, brains):
+        self.name           = name
+        self.description    = description
+        self.klass          = klass
+        self.isBot          = isBot
+        self.hp             = hp
+        self.brains         = 0
     #enddef
 #endclass
 
 class TotalInGame:
-    def __init__(qtd, qtdplayers, qtdbots):
-        qtd.players = qtdplayers
-        qtd.bots    = qtdbots
-        qtd.total   = qtdplayers + qtdbots
+    def __init__(self, qtdplayers, qtdbots):
+        self.players = qtdplayers
+        self.bots    = qtdbots
+        self.total   = self.bots + self.players
     #enddef
 #endclass
 
 Klass = {
-    1: ["Parrudo", 0, "Enquanto as outras classes possuem 3 de vida, esta tem 4. Porém, devido ao seu acelerado metabolismo, precisa consumir 15 cérebros para a vitória ao invés de 13."],
-    2: ["Incansável", 0, "Caso os 3 dados na rodada deste zumbi resultem em passos, este pode optar por correr mais um pouco e jogar mais um dado para tentar alcançar sua vítima."],
-    3: ["Ciclista", 4, "Este zumbi já não anda mais de bicicleta, mas ainda tem um capacete que oferece 50% de chances de protegê-lo do tiro. Durabilidade de 4 tiros."],
-    4: ["Cowboy", 0, "Se o cowboy conseguir cérebros na rodada, ele pode optar por trocá-los por laços. Ao jogar um laço, existe 30% de chances de pegar 1 vítima, 15% de pegar 2 e 3% de pegar 3."]
+    0 : {
+        'name'          : 'Parrudo',
+        'items'         : 0,
+        'hp'            : 4,
+        'description'   : "Enquanto as outras classes possuem 3 de vida, esta tem 4. Porém, devido ao seu acelerado metabolismo, precisa consumir 15 cérebros para a vitória ao invés de 13."
+    },
+
+    1 : {
+        'name'          : 'Incansável',
+        'items'         : 0,
+        'hp'            : 3,
+        'description'   : "Caso os 3 dados na rodada deste zumbi resultem em passos, este pode optar por correr mais um pouco e jogar mais um dado para tentar alcançar sua vítima."
+    },
+
+    2 : {
+        'name'          : 'Ciclista',
+        'items'         : 1,
+        'hp'            : 3,
+        'description'   : "Este zumbi já não anda mais de bicicleta, mas ainda tem um capacete que oferece 50% de chances de protegê-lo do tiro. Durabilidade de 4 tiros."
+    },
+
+    3 : {
+        'name'          : 'Cowboy',
+        'items'         : 1,
+        'hp'            : 3,
+        'description'   : "Se o cowboy conseguir cérebros na rodada, ele pode optar por trocá-los por laços. Ao jogar um laço, existe 30% de chances de pegar 1 vítima, 15% de pegar 2 e 3% de pegar 3."
+    }
+
+
+    #TODO: add Weeb that gets isekai'd when he dies (1hp)
+
 }
 
-BotNameSyllables    = {"kan", "len", "ghi", "flok", "trom", "fle", "dros", "da", "li", "ma"}
+
+BotNameSyllables    = {"kan", "len", "ghi", "flok", "trom", "fle", "dros", "da", "lim", "a", "ki", "ta", "ma", "shi"}
 BotGenerationMessages      = {
     "Mordendo uns transeuntes...",
     "Selecionando os melhores cérebros...",
@@ -50,7 +77,10 @@ BotGenerationMessages      = {
     "Costurando mandíbulas tortas...",
     "Enchendo linguiça...",
     "Treinando o zumbi...",
-    "Enchendo a caneca de café..."
+    "Enchendo a caneca de café...",
+    "Contemplando a paisagem...",
+    "Ouvindo grunge...",
+    "Motivando o zumbi..."
 }
 
 PlayersInGame = []
@@ -59,28 +89,43 @@ PlayersInGame = []
 
 def newSection():
     print("\n\n")
-    print("===========================================")
-    print("###########################################")
-    print("===========================================")
+    speech("============================================|", .01)
+    speech("|######################", .02)
     print("\n\n")
+#enddef
+
+def speech(text, speed):
+    for c in text:
+        print(c, end='', flush=True)
+        time.sleep(speed)
+        if c == ';' or c == ':' or c == '.':
+            time.sleep(1)
+        elif c == ',':
+            time.sleep(.2)
+#enddef
 
 def Welcome():
-    print("Olá! Bem vindos ao ZombieDice.")
+    speech('ATENÇÃO: este programa usa alguns caracteres UTF-8. Caso seu console não esteja configurado com suporte UTF-8,', .01)
+    speech('\n vão aparecer uns bagulhos sinistros na tela.', .01)
+    speech('\n Aqui uma demonstração desses caracteres: ⣿⣿⣿', .01)
+    newSection()
+    newSection()
+    speech("Olá! Bem vindos ao ZombieDice.\n", .04)
     time.sleep(2)
-    print("Este é um jogo de zumbi, mas antes que você comece a se gabar")
-    print("de ser um expert em sobrevivência pós-apocalíptica porque já")
-    print("assistiu todas as temporadas de The Walking Dead, fique sabendo que:")
-    time.sleep(7)
-    print("\n   1. Já pode tirar seu cavalinho da horda de zumbis, Rick Grimes.")
-    print("   Neste jogo, VOCÊ É O ZUMBI.")
-    time.sleep(4)
-    print("\n   2. Para de ser fanboy, aceita logo que TWD fica paia depois da 6 temporada :/")
-    time.sleep(4)
+    speech("Este é um jogo de zumbi, mas antes que você comece a se gabar\n", .01)
+    speech("de ser um expert em sobrevivência pós-apocalíptica porque já\n", .01)
+    speech("assistiu todas as temporadas de The Walking Dead, fique sabendo que:", .01)
+    time.sleep(2)
+    speech("\n\n   1. Já pode tirar seu cavalinho da horda de zumbis, Rick Grimes.", .01)
+    speech("\n      Neste jogo, VOCÊ É O ZUMBI.", .01)
+    time.sleep(1)
+    speech("\n\n   2. Para de ser fanboy, aceita logo que TWD fica paia depois da 6 temporada :/", .01)
+    time.sleep(3)
 
-    print("\nOk, preparem a pipoca, acomodem-se na cadeira, abram o refri!")
-    print("Vamos começar. Antes, eu preciso saber quanta gente vai jogar.")
-    print("Ah, e não se preocupe se tiver pouca gente! Dá pra chamar a turma")
-    print("do seu Zumbnelson pra dar uma força (a.k.a. bots).")
+    speech("\n\nOk, preparem a pipoca, acomodem-se na cadeira, abram o suco de tamarindo (com sabor de limão)!", .01)
+    speech("\nVamos começar. Antes, eu preciso saber quanta gente vai jogar.", .01)
+    speech("\nAh, e não se preocupe se tiver pouca gente! Posso usar meus poderes", .01)
+    speech("\npsiônicos para invocar uns bots.", .01)
 
     StartMenu()
 #enddef
@@ -106,27 +151,28 @@ def StartMenu():
       
     print("Bip bop, {} bots vão jogar.".format(quantityOfBots))
 
-    TotalInGame(quantityOfPlayers, quantityOfBots)
+    TotalInThisGame = TotalInGame(quantityOfPlayers, quantityOfBots)
 
-    if TotalInGame.total <= 1:
+    if TotalInThisGame.total <= 1:
         print("Quer todos os cérebros pra você? ~.o")
         print("Adicione pelo menos 2 jogadores ou bots para iniciar.")
         StartMenu()
 
-    if TotalInGame.qtdplayers == 0:
+    if TotalInThisGame.players == 0:
         print("Robô também sofre, abaixem o preço do i9!")
 
     
-    SetCharacters()
+    SetCharacters(TotalInThisGame)
+    StartGame()
 
 #enddef
 
-def SetCharacters():
+def SetCharacters(TotalInThisGame):
     newSection()
-    GenerateBots()
+    GenerateBots(TotalInThisGame.bots)
 
     newSection()
-    SetPlayers()
+    SetPlayers(TotalInThisGame.players)
 
 #enddef
 
@@ -135,7 +181,7 @@ def GenerateBots(quantityOfBots):
 
     for x in range(random.randint(3, 6)):
         print(random.choice(list(BotGenerationMessages))) #imersão
-        time.sleep(2)
+        time.sleep(1.5)
 
     print("") #linebreak
     for i in range(quantityOfBots):
@@ -147,24 +193,131 @@ def GenerateBots(quantityOfBots):
             name += random.choice(tuple(BotNameSyllables))
             
         description = 'bipbop' #TODO add cool descriptions
-        klass = random.choice(list(Klass))
+        klass = random.randint(0, len(Klass) - 1)
         isBot = True
 
-        PlayersInGame.append(str(Player(name, description, klass, isBot, 3, 0).__dict__))
+        PlayersInGame.append(Player(name, description, klass, isBot, 3, 0))
 
-        print("Nasce {}, um zumbi {}!".format(name, Klass[klass][0]))
+        speech("Nasce {}, um zumbi {}!\n".format(name, Klass[klass]['name']), .01)
+        time.sleep(.5)
 
 #enddef
 
 
-def SetPlayers():
-    print("Joia. Agora, vamos criar os personagens dos jogadores ^ü^ eba!")
+def SetPlayers(quantityOfPlayers):
+    print("\nJoia. Agora, vamos criar os personagens dos jogadores ^ü^ eba!\n\n")
 
-    name = input("Escolha um nome que faça jus à grandeza de seu personagem:")
-    print("{}! Que nome digno!".format(name))
+    for i in range(quantityOfPlayers):
+        name = input("Jogador {}, escolha um nome que faça jus à grandeza de seu personagem: ".format(i+1))
+        print("\n{}! Que nome digno!\n".format(name))
+        time.sleep(3)
 
-    print("Vamos escolher a classe do seu personagem.")
-    for x in Klass:
-        print("{}. {} - {}".format(x,Klass[x][0],Klass[x][2]))
+        print("Vamos escolher a classe do seu personagem.\n")
+        time.sleep(2)
+        for x in Klass:
+            print("{}. {} - {}".format(x,Klass[x]['name'],Klass[x]['description']))
+            time.sleep(1)
 
-SetPlayers()
+        while True:
+            try:
+                chosenKlass = int(input("\n\nE aí, qual a classe de {}? ".format(name)))
+                if chosenKlass in range(0, len(Klass)):
+                    break
+                else:
+                    print('\nOops, parece que a classe não existe. Tente escolher um número entre 0 e {}, correpondente a classe de {}'.format(len(Klass) - 1, name))
+            except:
+                print('\nOops, parece que a classe não existe. Tente escolher um número entre 0 e {}, correpondente a classe de {}'.format(len(Klass) - 1, name))
+
+        klass = chosenKlass
+        speech("Nobre {}!".format(Klass[klass]['name']),.01)
+        time.sleep(1)
+
+        print('\nVamos adicionar uma descrição digna para {}.'.format(name))
+        description = input('{} é: '.format(name))
+        
+        isBot = False
+        hp = int(Klass[klass]['hp'])
+        PlayersInGame.append(Player(name, description, klass, isBot, hp, 0))
+        speech('\nUma nova lenda surge: {} ({}), {}\n'.format(name, Klass[klass]['name'], description), .04)
+
+#enddef
+
+def StartGame():
+    speech('\nMestre: A aventura vai começar.\n', .02)
+    speech('\nNossos nobres heróis ', .02)
+    for h in PlayersInGame:
+        speech('{}, {}; '.format(h.name, h.description),.01)
+        time.sleep(.4)
+    
+    speech('partem em sua jornada para salvar o mundo dos zumbis e... ãh?', .02)
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    while speaker1 == speaker2:
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+
+    speech('\n{}: Que barulho é esse?'.format(speaker1), .02)
+    time.sleep(2)
+    speech('\n{}: Parece que vem da porta.'.format(speaker2), .02)
+    time.sleep(2)
+    speech('\n -Frodo, o guarda, vem correndo até a sala. Parece que está com o braço ferido.', .02)
+    time.sleep(2)
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    while speaker1 == speaker2:
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+
+    speech('\nFrodo: Arrgh! {}, {}, pessoal! Emergência!'.format(speaker1, speaker2), .02)
+    time.sleep(2)
+    speech('\n{}: Frodo! O que houve? Seu braço!'.format(speaker1), .02)
+    time.sleep(2)
+    speech('\nMestre: Antes que alguém pudesse proferir outras palavras, percebem uma silhueta atrás de Frodo.', .02)
+    time.sleep(3)
+    print('\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣶⣿⣿⣿⣷⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⣴⣶⣶⣿⣿⣿⣿⣶⣦⣄⣀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠙⠻⢿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠆⠀⠀⠀⠀⠀⠈⠉⠀⣿⣿⣿⣿⣿⣷⠀\n⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⠃⠀⠀⠀⠀⠀⠀⠀⠀⣿⡟⠹⣿⣿⣿⡆\n⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⡇\n⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⣠⣼⣿⣿⣿⣿⣿⡟⠀⣿⣿⡿⠻⠟⠀⠀⠀⠀⠸⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⣴⣿⣿⣿⣿⣿⣿⣿⣿⡇⢠⣿⣿⡷⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠻⣿⣿⣿⣿⣿⠋⢻⣿⣧⣻⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠙⠛⣿⣿⠏⠀⠀⠉⠃⣿⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⠋⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⡏⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⢿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢾⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⠿⣿⣿⣿⡿')
+    speech('zumbi: ', .01)
+    time.sleep(3)
+    speech('C... Cééééreebrooos...', .05)
+    time.sleep(1)
+    speech('\n\nMestre: Uma horda de zumbis entra na casa. ', .02)
+    time.sleep(2)
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    while speaker1 == speaker2:
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+
+    speech('{} tenta alcançar o baú onde guardam as armas. Está emperrado. {} tenta ajudá-lo, mas percebe uma pressão sob'.format(speaker1, speaker2),.02)
+    speech('\nseu tornozelo. Sua visão fica escura e desmaia.',.02)
+    time.sleep(1)
+
+    speech('\n\nMestre: Quando {} acorda, percebe algo diferente: estava verde. Seus amigos também. Frodo havia sumido.'.format(speaker2),.02)
+    time.sleep(1)
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    while speaker1 == speaker2:
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+
+    speech('\n{}: Gente, tem algo errado...'.format(speaker1), .02)
+    time.sleep(1)
+    speech('\n{}: Uau, Sherlock Holmes, descobriu isso sozinho? Parece que viramos zumbis.'.format(speaker2), .02)
+    time.sleep(1)
+    speech('\n{}: Paia :/ . Pior que eu to com fome...'.format(speaker1), .02)
+    time.sleep(1)
+
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    while speaker1 == speaker2:
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+
+    speech('\n{}: Acho que devíamos sair por aí comer uns cérebros, papo reto.'.format(speaker1), .02)
+    time.sleep(1)
+    speech('\n{}: Devíamos fazer uma competição também, quem enche a barriga primeiro.'.format(speaker2), .02)
+    time.sleep(1)
+    speech('\n{}: Da hora! Eu tô nessa!'.format(speaker1), .02)
+    time.sleep(1)
+
+    speech('\n\nMestre: E então, os mais novos zumbis de Rootenville saíram para buscar vítimas indefesas para\n', .02)
+    speech('fins puramente competitivos. ', .02)
+    time.sleep(2)
+    speech('Que foi, achou que eles teriam que coletar cérebros para salvar o mundo de algum jeito?', .02)
+
+
+Welcome()
