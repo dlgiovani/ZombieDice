@@ -9,6 +9,7 @@
 
 # Bibliotecas
 
+from operator import countOf
 import time, random, copy
 
 #--
@@ -69,8 +70,9 @@ Klass = {
 }
 
 
-BotNameSyllables    = {"kan", "len", "ghi", "flok", "trom", "fle", "dros", "da", "lim", "a", "ki", "ta", "ma", "shi"}
-BotGenerationMessages      = {
+BotNameSyllables = {"kan", "len", "ghi", "flok", "trom", "fle", "dros", "da", "lim", "a", "ki", "ta", "ma", "shi"}
+
+BotGenerationMessages = {
     "Mordendo uns transeuntes...",
     "Selecionando os melhores cérebros...",
     "Fazendo uma pausa pro lanche...",
@@ -82,6 +84,31 @@ BotGenerationMessages      = {
     "Ouvindo grunge...",
     "Motivando o zumbi..."
 }
+
+Dices = {
+    0: {
+        'Cor'       : 'Verde',
+        'Passos'    : 2,
+        'Tiro'      : 1,
+        'Cérebro'   : 3
+    },
+
+    1: {
+        'Cor'       : 'Amarelo',
+        'Passos'    : 2,
+        'Tiro'      : 2,
+        'Cérebro'   : 2
+    },
+
+    2: {
+        'Cor'       : 'Vermelho',
+        'Passos'    : 2,
+        'Tiro'      : 3,
+        'Cérebro'   : 1
+    }
+}
+
+Actions = ['Passos', 'Tiro', 'Cérebro']
 
 PlayersInGame = []
 
@@ -135,6 +162,9 @@ def StartMenu():
     while True:
         try:
             quantityOfPlayers = int(input("\nQuantas pessoas vão jogar?:"))
+            if quantityOfPlayers < 0:
+                quantityOfPlayers *= -1
+
             break
         except ValueError:
             print("Oops... Algo deu errado. Você inseriu um número de jogadores?")
@@ -145,6 +175,9 @@ def StartMenu():
     while True:
         try:
             quantityOfBots = int(input("\nQuantos bots vão jogar?:"))
+            if quantityOfBots < 0:
+                quantityOfBots *= -1
+
             break
         except ValueError:
             print("Oops... Algo deu errado. Você inseriu um número de bots?")
@@ -164,16 +197,19 @@ def StartMenu():
 
     
     SetCharacters(TotalInThisGame)
+    #ScriptStartGame() TODO descomentar
     StartGame()
 
 #enddef
 
 def SetCharacters(TotalInThisGame):
-    newSection()
-    GenerateBots(TotalInThisGame.bots)
+    if TotalInThisGame.bots > 0:
+        newSection()
+        GenerateBots(TotalInThisGame.bots)
 
-    newSection()
-    SetPlayers(TotalInThisGame.players)
+    if TotalInThisGame.players > 0:
+        newSection()
+        SetPlayers(TotalInThisGame.players)
 
 #enddef
 
@@ -243,7 +279,7 @@ def SetPlayers(quantityOfPlayers):
 
 #enddef
 
-def StartGame():
+def ScriptStartGame():
     speech('\nMestre: A aventura vai começar.\n', .02)
     speech('\nNossos nobres heróis ', .02)
     for h in PlayersInGame:
@@ -320,5 +356,42 @@ def StartGame():
     time.sleep(2)
     speech('Que foi, achou que eles teriam que coletar cérebros para salvar o mundo de algum jeito?', .02)
 
+#enddef
 
-Welcome()
+def getDice():
+    thisDice = (Dices[random.randint(0, len(Dices)-1)])
+    print(thisDice)
+    return thisDice
+
+#enddef
+
+
+def StartGame():
+    newSection()
+    turno = 1
+    rodada = 0
+
+    for thisPlayer in PlayersInGame:
+        rodada += 1
+        if rodada == len(PlayersInGame):
+            turno += 1
+        speech('Turno {}, rodada de {}!\n'.format(turno, thisPlayer.name), .02)
+        speech('\n{}, prepare-se.\n'.format(thisPlayer.name), .02)
+
+        input('Aperte Enter para selecionar seus dados...')
+
+        thisDice = Dices[random.randint(0, len(Dices)-1)]
+        speech('\nDado {}!\n'.format(thisDice['Cor']), .02)
+
+        input('Aperte Enter para jogar o dado...')
+        speech('\n...\n', .02)
+        
+        thisAction = random.choices(Actions, weights = (thisDice['Passos'], thisDice['Tiro'], thisDice['Cérebro']), k = 1)
+
+        speech('{}\n'.format(thisAction), .02)
+
+        #TODO tratar dados
+
+#enddef
+
+StartMenu()
