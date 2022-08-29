@@ -25,6 +25,10 @@ class Player:
         self.hp             = hp
         self.brains         = 0
     #enddef
+
+    def getPlayer(name, description, klass, isBot, hp, brains):
+        return {'name': name, 'description': description, 'klass': klass, 'isBot': isBot, 'hp': hp, 'brains': brains}
+    #enddef
 #endclass
 
 class TotalInGame:
@@ -90,23 +94,30 @@ Dices = {
         'Cor'       : 'Verde',
         'Passos'    : 2,
         'Tiro'      : 1,
-        'Cérebro'   : 3
+        'Cérebro'   : 3,
+        'Quantidade': 6
     },
 
     1: {
         'Cor'       : 'Amarelo',
         'Passos'    : 2,
         'Tiro'      : 2,
-        'Cérebro'   : 2
+        'Cérebro'   : 2,
+        'Quantidade': 4
     },
 
     2: {
         'Cor'       : 'Vermelho',
         'Passos'    : 2,
         'Tiro'      : 3,
-        'Cérebro'   : 1
+        'Cérebro'   : 1,
+        'Quantidade': 3
     }
 }
+
+DicesIndexes = []
+for i in Dices:
+    DicesIndexes.append(i)
 
 Actions = ['Passos', 'Tiro', 'Cérebro']
 
@@ -117,7 +128,7 @@ PlayersInGame = []
 def newSection():
     print("\n\n")
     speech("============================================|", .01)
-    speech("|######################", .02)
+    speech("|######################", .03)
     print("\n\n")
 #enddef
 
@@ -188,8 +199,8 @@ def StartMenu():
     TotalInThisGame = TotalInGame(quantityOfPlayers, quantityOfBots)
 
     if TotalInThisGame.total <= 1:
-        print("Quer todos os cérebros pra você? ~.o")
-        print("Adicione pelo menos 2 jogadores ou bots para iniciar.")
+        speech("\n\nQuer todos os cérebros pra você? ~.o", .03)
+        speech("\nAdicione pelo menos 2 jogadores ou bots para iniciar.\n", .03)
         StartMenu()
 
     if TotalInThisGame.players == 0:
@@ -197,7 +208,7 @@ def StartMenu():
 
     
     SetCharacters(TotalInThisGame)
-    #ScriptStartGame() TODO descomentar
+    ScriptStartGame()
     StartGame()
 
 #enddef
@@ -218,7 +229,7 @@ def GenerateBots(quantityOfBots):
 
     for x in range(random.randint(3, 6)):
         print(random.choice(list(BotGenerationMessages))) #imersão
-        time.sleep(1.5)
+        time.sleep(1.2)
 
     print("") #linebreak
     for i in range(quantityOfBots):
@@ -233,7 +244,7 @@ def GenerateBots(quantityOfBots):
         klass = random.randint(0, len(Klass) - 1)
         isBot = True
 
-        PlayersInGame.append(Player(name, description, klass, isBot, 3, 0))
+        PlayersInGame.append(Player.getPlayer(name, description, klass, isBot, 3, 0))
 
         speech("Nasce {}, um zumbi {}!\n".format(name, Klass[klass]['name']), .01)
         time.sleep(.5)
@@ -250,10 +261,11 @@ def SetPlayers(quantityOfPlayers):
         time.sleep(3)
 
         print("Vamos escolher a classe do seu personagem.\n")
+        print('(*funcionalidades a serem implementadas no jogo, por enquanto seu personagem vai ter só um título legal mesmo.*)') #TODO
         time.sleep(2)
         for x in Klass:
             print("{}. {} - {}".format(x,Klass[x]['name'],Klass[x]['description']))
-            time.sleep(1)
+            time.sleep(.03)
 
         while True:
             try:
@@ -274,87 +286,87 @@ def SetPlayers(quantityOfPlayers):
         
         isBot = False
         hp = int(Klass[klass]['hp'])
-        PlayersInGame.append(Player(name, description, klass, isBot, hp, 0))
+        PlayersInGame.append(Player.getPlayer(name, description, klass, isBot, hp, 0))
         speech('\nUma nova lenda surge: {} ({}), {}\n'.format(name, Klass[klass]['name'], description), .04)
 
 #enddef
 
 def ScriptStartGame():
-    speech('\nMestre: A aventura vai começar.\n', .02)
-    speech('\nNossos nobres heróis ', .02)
-    for h in PlayersInGame:
-        speech('{}, {}; '.format(h.name, h.description),.01)
+    speech('\nMestre: A aventura vai começar.\n', .03)
+    speech('\nNossos nobres heróis ', .03)
+    for onePlayer in PlayersInGame:
+        speech('{}, {}; '.format(onePlayer['name'], onePlayer['description']),.01)
         time.sleep(.4)
     
-    speech('partem em sua jornada para salvar o mundo dos zumbis e... ãh?', .02)
-    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
-    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speech('partem em sua jornada para salvar o mundo dos zumbis e... ãh?', .03)
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
     while speaker1 == speaker2:
-        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
 
-    speech('\n{}: Que barulho é esse?'.format(speaker1), .02)
+    speech('\n{}: Que barulho é esse?'.format(speaker1), .03)
     time.sleep(2)
-    speech('\n{}: Parece que vem da porta.'.format(speaker2), .02)
+    speech('\n{}: Parece que vem da porta.'.format(speaker2), .03)
     time.sleep(2)
-    speech('\n -Frodo, o guarda, vem correndo até a sala. Parece que está com o braço ferido.', .02)
+    speech('\n -Frodo, o guarda, vem correndo até a sala. Parece que está com o braço ferido.', .03)
     time.sleep(2)
-    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
-    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
     while speaker1 == speaker2:
-        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
 
-    speech('\nFrodo: Arrgh! {}, {}, pessoal! Emergência!'.format(speaker1, speaker2), .02)
+    speech('\nFrodo: Arrgh! {}, {}, pessoal! Emergência!'.format(speaker1, speaker2), .03)
     time.sleep(2)
-    speech('\n{}: Frodo! O que houve? Seu braço!'.format(speaker1), .02)
+    speech('\n{}: Frodo! O que houve? Seu braço!'.format(speaker1), .03)
     time.sleep(2)
-    speech('\nMestre: Antes que alguém pudesse proferir outras palavras, percebem uma silhueta atrás de Frodo.', .02)
+    speech('\nMestre: Antes que alguém pudesse proferir outras palavras, percebem uma silhueta atrás de Frodo.', .03)
     time.sleep(3)
     print('\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣶⣿⣿⣿⣷⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⣴⣶⣶⣿⣿⣿⣿⣶⣦⣄⣀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣴⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠙⠻⢿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠆⠀⠀⠀⠀⠀⠈⠉⠀⣿⣿⣿⣿⣿⣷⠀\n⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⠃⠀⠀⠀⠀⠀⠀⠀⠀⣿⡟⠹⣿⣿⣿⡆\n⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⡇\n⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⣠⣼⣿⣿⣿⣿⣿⡟⠀⣿⣿⡿⠻⠟⠀⠀⠀⠀⠸⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⣴⣿⣿⣿⣿⣿⣿⣿⣿⡇⢠⣿⣿⡷⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠻⣿⣿⣿⣿⣿⠋⢻⣿⣧⣻⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠙⠛⣿⣿⠏⠀⠀⠉⠃⣿⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⠋⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⡏⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⢿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢾⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⠿⣿⣿⣿⡿')
     speech('zumbi: ', .01)
     time.sleep(3)
     speech('C... Cééééreebrooos...', .05)
     time.sleep(1)
-    speech('\n\nMestre: Uma horda de zumbis entra na casa. ', .02)
+    speech('\n\nMestre: Uma horda de zumbis entra na casa. ', .03)
     time.sleep(2)
-    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
-    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
     while speaker1 == speaker2:
-        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
 
-    speech('{} tenta alcançar o baú onde guardam as armas. Está emperrado. {} tenta ajudá-lo, mas percebe uma pressão sob'.format(speaker1, speaker2),.02)
-    speech('\nseu tornozelo. Sua visão fica escura e desmaia.',.02)
+    speech('{} tenta alcançar o baú onde guardam as armas. Está emperrado. {} tenta ajudá-lo, mas percebe uma pressão sob'.format(speaker1, speaker2),.03)
+    speech('\nseu tornozelo. Sua visão fica escura e desmaia.',.03)
     time.sleep(1)
 
-    speech('\n\nMestre: Quando {} acorda, percebe algo diferente: estava verde. Seus amigos também. Frodo havia sumido.'.format(speaker2),.02)
+    speech('\n\nMestre: Quando {} acorda, percebe algo diferente: estava verde. Seus amigos também. Frodo havia sumido.'.format(speaker2),.03)
     time.sleep(1)
-    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
-    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
     while speaker1 == speaker2:
-        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
 
-    speech('\n{}: Gente, tem algo errado...'.format(speaker1), .02)
+    speech('\n{}: Gente, tem algo errado...'.format(speaker1), .03)
     time.sleep(1)
-    speech('\n{}: Uau, Sherlock Holmes, descobriu isso sozinho? Parece que viramos zumbis.'.format(speaker2), .02)
+    speech('\n{}: Uau, Sherlock Holmes, descobriu isso sozinho? Parece que viramos zumbis.'.format(speaker2), .03)
     time.sleep(1)
-    speech('\n{}: Paia :/ . Pior que eu to com fome...'.format(speaker1), .02)
+    speech('\n{}: Paia :/ . Pior que eu to com fome...'.format(speaker1), .03)
     time.sleep(1)
 
-    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
-    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+    speaker1 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
+    speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
     while speaker1 == speaker2:
-        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))].name
+        speaker2 = PlayersInGame[random.randrange(0, len(PlayersInGame))]['name']
 
-    speech('\n{}: Acho que devíamos sair por aí comer uns cérebros, papo reto.'.format(speaker1), .02)
+    speech('\n{}: Acho que devíamos sair por aí comer uns cérebros, papo reto.'.format(speaker1), .03)
     time.sleep(1)
-    speech('\n{}: Devíamos fazer uma competição também, quem enche a barriga primeiro.'.format(speaker2), .02)
+    speech('\n{}: Devíamos fazer uma competição também, quem enche a barriga primeiro.'.format(speaker2), .03)
     time.sleep(1)
-    speech('\n{}: Da hora! Eu tô nessa!'.format(speaker1), .02)
+    speech('\n{}: Da hora! Eu tô nessa!'.format(speaker1), .03)
     time.sleep(1)
 
-    speech('\n\nMestre: E então, os mais novos zumbis de Rootenville saíram para buscar vítimas indefesas para\n', .02)
-    speech('fins puramente competitivos. ', .02)
+    speech('\n\nMestre: E então, os mais novos zumbis de Rootenville saíram para buscar vítimas indefesas para\n', .03)
+    speech('fins puramente competitivos. ', .03)
     time.sleep(2)
-    speech('Que foi, achou que eles teriam que coletar cérebros para salvar o mundo de algum jeito?', .02)
+    speech('Que foi, achou que eles teriam que coletar cérebros para salvar o mundo de algum jeito?', .03)
 
 #enddef
 
@@ -368,30 +380,75 @@ def getDice():
 
 def StartGame():
     newSection()
-    turno = 1
-    rodada = 0
+    keepPlaying = 's'
+    for currentPlayer in PlayersInGame:
+        steps   = 0
+        shots   = 0
+        brains  = 0
+        dices   = 0
+        playerIsPlaying = True
+        speech('\nTurno de {}!\nNo momento, tem {} cérebros.'.format(currentPlayer['name'], currentPlayer['brains']), .03)
+        speech('\n{}, prepare-se.\n'.format(currentPlayer['name']), .03)
+        DiceTube = copy.deepcopy(Dices)
+        DiceTube[0]['Quantidade']   = Dices[0]['Quantidade']
+        DiceTube[1]['Quantidade']   = Dices[1]['Quantidade']
+        DiceTube[2]['Quantidade']   = Dices[2]['Quantidade']
+        while playerIsPlaying:
+            input('Aperte Enter para selecionar seus dados...')
+            dices += 1
 
-    for thisPlayer in PlayersInGame:
-        rodada += 1
-        if rodada == len(PlayersInGame):
-            turno += 1
-        speech('Turno {}, rodada de {}!\n'.format(turno, thisPlayer.name), .02)
-        speech('\n{}, prepare-se.\n'.format(thisPlayer.name), .02)
+            thisDice = DiceTube[random.choices(DicesIndexes, weights = [DiceTube[0]['Quantidade'], DiceTube[1]['Quantidade'], DiceTube[2]['Quantidade']], k = 1)[0]]
+            thisDice['Quantidade'] -= 1
+            #print('dados no tubo \n{}'.format(DiceTube)) #TODO quando chegar em 13, dados que não resultaram em tiros devem voltar ao tubo.
+            speech('\nDado {}!\n'.format(thisDice['Cor']), .03)
 
-        input('Aperte Enter para selecionar seus dados...')
+            input('Aperte Enter para jogar o dado...')
+            speech('\n...\n', .03)
+            
+            thisAction = random.choices(Actions, weights = (thisDice['Passos'], thisDice['Tiro'], thisDice['Cérebro']), k = 1)
 
-        thisDice = Dices[random.randint(0, len(Dices)-1)]
-        speech('\nDado {}!\n'.format(thisDice['Cor']), .02)
+            match thisAction[0]:
+                case 'Passos':
+                    steps += 1
+                case 'Tiro':
+                    shots += 1
+                case 'Cérebro':
+                    brains += 1
 
-        input('Aperte Enter para jogar o dado...')
-        speech('\n...\n', .02)
-        
-        thisAction = random.choices(Actions, weights = (thisDice['Passos'], thisDice['Tiro'], thisDice['Cérebro']), k = 1)
+            speech('-> {}!\nTotais neste turno:\n'.format(thisAction[0]), .01)
+            print(' - Passos: {}\n - Tiros: {}\n - Cérebros: {}\n'.format(steps, shots, brains))
 
-        speech('{}\n'.format(thisAction), .02)
+            if shots >= 3:
+                speech('\nOh não, você perdeu este turno!\n', .03)
+                playerIsPlaying = False
+                break
 
-        #TODO tratar dados
+            if dices >= 3:
+                while True:
+                    speech('\nDeseja pegar mais 3 dados para jogar? (S/N)\n', .03)
+                    try:
+                        keepPlaying = str.lower(input())
+                    except:
+                        speech('\nOops, digite S para sim ou N para não.\n', .03)
+                    
+                    if keepPlaying == 's' or 'n':
+                        break
+                    else:
+                        speech('\nOops, digite S para sim ou N para não.\n', .03)
+            
+                if keepPlaying == 's':
+                    dices = 0
+                else: #keepPlaying == 'n'
+                    currentPlayer['brains'] += brains
+                    playerIsPlaying = False
+                    speech('{} termina seu turno com\n - {} Cérebros\n - Sofrendo {} Tiros, avançando com {} cérebros no total.'.format(currentPlayer['name'], brains, shots, currentPlayer['brains']), .03)
+                    break
+
+    newSection()
+    speech('\nA rodada terminou. Estatísticas:\n', .04)
+    for p in PlayersInGame:
+        print('\n{}: {} cérebros'.format(p['name'], p['brains']))
 
 #enddef
 
-StartMenu()
+Welcome()
