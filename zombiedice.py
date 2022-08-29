@@ -142,6 +142,12 @@ def speech(text, speed):
             time.sleep(.2)
 #enddef
 
+
+'''
+
+Welcome: mensagem de boas vindas
+
+'''
 def Welcome():
     speech('ATENÇÃO: este programa usa alguns caracteres UTF-8. Caso seu console não esteja configurado com suporte UTF-8,', .01)
     speech('\n vão aparecer uns bagulhos sinistros na tela.', .01)
@@ -168,6 +174,12 @@ def Welcome():
 
     StartMenu()
 #enddef
+
+'''
+
+StartMenu: Define a quantidade de jogadores e de bots
+
+'''
 
 def StartMenu():
     while True:
@@ -213,6 +225,12 @@ def StartMenu():
 
 #enddef
 
+'''
+
+SetCharacters: chama funções para criar personagens, bots e humanos
+
+'''
+
 def SetCharacters(TotalInThisGame):
     if TotalInThisGame.bots > 0:
         newSection()
@@ -223,6 +241,12 @@ def SetCharacters(TotalInThisGame):
         SetPlayers(TotalInThisGame.players)
 
 #enddef
+
+'''
+
+GenerateBots: gera bots, seus nomes e classes, e os adiciona na lista de jogadores
+
+'''
 
 def GenerateBots(quantityOfBots):
     print("Ok! vou gerar os bots...\n")
@@ -251,6 +275,11 @@ def GenerateBots(quantityOfBots):
 
 #enddef
 
+'''
+
+SetPlayers: Define jogadores humanos a partir de inputs do usuário, e os adiciona a lista de jogadores.
+
+'''
 
 def SetPlayers(quantityOfPlayers):
     print("\nJoia. Agora, vamos criar os personagens dos jogadores ^ü^ eba!\n\n")
@@ -290,6 +319,12 @@ def SetPlayers(quantityOfPlayers):
         speech('\nUma nova lenda surge: {} ({}), {}\n'.format(name, Klass[klass]['name'], description), .04)
 
 #enddef
+
+'''
+
+ScriptStartGame: script para fins de imersão
+
+'''
 
 def ScriptStartGame():
     speech('\nMestre: A aventura vai começar.\n', .03)
@@ -370,6 +405,12 @@ def ScriptStartGame():
 
 #enddef
 
+'''
+
+getDice: protótipo de função a ser utilizada posteriormente em versões melhoradas deste código. Não é utilizada no escopo atual.
+
+'''
+
 def getDice():
     thisDice = (Dices[random.randint(0, len(Dices)-1)])
     print(thisDice)
@@ -377,11 +418,17 @@ def getDice():
 
 #enddef
 
+'''
+
+StartGame: inicia as rodadas
+
+'''
 
 def StartGame():
     newSection()
     keepPlaying = 's'
-    for currentPlayer in PlayersInGame:
+
+    for currentPlayer in PlayersInGame: # Para cada jogador listado
         steps   = 0
         shots   = 0
         brains  = 0
@@ -389,14 +436,17 @@ def StartGame():
         playerIsPlaying = True
         speech('\nTurno de {}!\nNo momento, tem {} cérebros.'.format(currentPlayer['name'], currentPlayer['brains']), .03)
         speech('\n{}, prepare-se.\n'.format(currentPlayer['name']), .03)
-        DiceTube = copy.deepcopy(Dices)
+
+        DiceTube = copy.deepcopy(Dices) #tubo a ser utilizado no turno do próximo jogador, resetado para o default sempre que muda de jogador
         DiceTube[0]['Quantidade']   = Dices[0]['Quantidade']
         DiceTube[1]['Quantidade']   = Dices[1]['Quantidade']
         DiceTube[2]['Quantidade']   = Dices[2]['Quantidade']
-        while playerIsPlaying:
+
+        while playerIsPlaying: #este boolean será falso quando o jogador não quiser pegar mais 3 dados ou quando receber 3 tiros no turno.
             input('Aperte Enter para selecionar seus dados...')
             dices += 1
 
+            #escolhendo o dado no tubo
             thisDice = DiceTube[random.choices(DicesIndexes, weights = [DiceTube[0]['Quantidade'], DiceTube[1]['Quantidade'], DiceTube[2]['Quantidade']], k = 1)[0]]
             thisDice['Quantidade'] -= 1
             #print('dados no tubo \n{}'.format(DiceTube)) #TODO quando chegar em 13, dados que não resultaram em tiros devem voltar ao tubo.
@@ -405,6 +455,7 @@ def StartGame():
             input('Aperte Enter para jogar o dado...')
             speech('\n...\n', .03)
             
+            #escolhendo a face no dado
             thisAction = random.choices(Actions, weights = (thisDice['Passos'], thisDice['Tiro'], thisDice['Cérebro']), k = 1)
 
             match thisAction[0]:
